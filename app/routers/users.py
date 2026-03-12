@@ -1,3 +1,4 @@
+from app.dependencies import get_current_user
 from fastapi import APIRouter,Depends,HTTPException,status
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -32,6 +33,10 @@ def create_user(user:UserCreate,db:Session=Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return new_user
+
+@router.get("/me",response_model=UserResponse)
+def get_me(current_user:User=Depends(get_current_user)):
+    return current_user
 
 @router.get("/{user_id}",response_model=UserResponse)
 def get_user(user_id:int,db:Session=Depends(get_db)):
