@@ -29,3 +29,22 @@ def get_current_user(
         raise credentials_exception
     
     return user
+
+def require_role(*roles:str):
+    def role_checker(current_user:User=Depends(get_current_user)):
+        if(current_user.role not in roles):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Access denied. Require role:{list(roles)}"
+            )
+        return current_user
+    return role_checker
+
+def get_admin_user(current_user:User=Depends((get_current_user))):
+    if current_user.role!="admin":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Require admin access"
+        )
+    return current_user
+

@@ -5,6 +5,8 @@ from app.database import get_db
 from app.models import User
 from app.schemas import UserCreate,UserResponse
 import bcrypt
+from app.dependencies import get_admin_user,get_current_user
+from typing import List
 
 router=APIRouter(
     prefix="/users",
@@ -47,3 +49,26 @@ def get_user(user_id:int,db:Session=Depends(get_db)):
             detail="User not found"
         )
     return user
+
+@router.get("/",response_model=List[UserResponse])
+def get_all_users(
+    db:Session=Depends(get_db),
+    create_user:User=Depends(get_admin_user)
+):
+    return db.query(User).all()
+
+@router.delete("/{user_id}")
+def delete_user(
+    user_id:int,
+    db:Session=Depends(get_db),
+    current_user:User=Depends(get_admin_user)
+):
+    user=db.query(User).filter(User.id==user_id).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    db.delete(user)
+    db.commit()
+    return None
