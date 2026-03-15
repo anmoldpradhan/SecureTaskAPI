@@ -1,10 +1,12 @@
-from fastapi import APIRouter,Depends,HTTPException,status
-from sqlalchemy.orm import Session
 from typing import List
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
 from app.database import get_db
+from app.dependencies import get_current_user
 from app.models import Task, User
-from app.schemas import TaskCreate,TaskResponse,TaskUpdate
-from app.dependencies import get_current_user,get_admin_user
+from app.schemas import TaskCreate, TaskResponse, TaskUpdate
 
 router=APIRouter(
     prefix="/tasks",

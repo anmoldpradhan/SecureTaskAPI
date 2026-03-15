@@ -1,8 +1,11 @@
-from sqlalchemy import String,Integer,Boolean,Column,DateTime,ForeignKey,Text,Enum
+import enum
+
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
 from app.database import Base
-import enum
+
 
 class User(Base):
     __tablename__="users"

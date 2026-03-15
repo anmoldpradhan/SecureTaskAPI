@@ -1,12 +1,13 @@
-from app.dependencies import get_current_user
-from fastapi import APIRouter,Depends,HTTPException,status
-from sqlalchemy.orm import Session
-from app.database import get_db
-from app.models import User
-from app.schemas import UserCreate,UserResponse
-import bcrypt
-from app.dependencies import get_admin_user,get_current_user
 from typing import List
+
+import bcrypt
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.database import get_db
+from app.dependencies import get_admin_user, get_current_user
+from app.models import User
+from app.schemas import UserCreate, UserResponse
 
 router=APIRouter(
     prefix="/users",

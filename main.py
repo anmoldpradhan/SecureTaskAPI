@@ -1,10 +1,11 @@
 from fastapi import FastAPI
-from app.database import engine
-from app import models
-from app.routers import users,auth,tasks
-from slowapi.util import get_remote_address
+from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from slowapi import Limiter,_rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+
+from app import models
+from app.database import engine
+from app.routers import auth, tasks, users
 
 limiter = Limiter(key_func=get_remote_address)
 

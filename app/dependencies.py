@@ -1,9 +1,10 @@
-from fastapi import Depends,HTTPException,status
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+
+from app.auth import verify_token
 from app.database import get_db
 from app.models import User
-from app.auth import verify_token
 from app.redis_client import is_token_blackllisted
 
 oauth2_scheme=OAuth2PasswordBearer(tokenUrl="/auth/login")
