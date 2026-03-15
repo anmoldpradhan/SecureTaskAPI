@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import User
 from app.auth import verify_token
+from app.redis_client import is_token_blackllisted
 
 oauth2_scheme=OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -16,7 +17,13 @@ def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate":"Bearer"}
     )
-
+    if is_token_blackllisted(token):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has been revoked. Please log in again.",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+    
     payload=verify_token(token)
     if payload is None:
         raise credentials_exception
@@ -24,6 +31,7 @@ def get_current_user(
     user_id=payload.get("sub")
     if user_id is None:
         raise credentials_exception
+    
     user=db.query(User).filter(User.id==int(user_id)).first()
     if user is None:
         raise credentials_exception
