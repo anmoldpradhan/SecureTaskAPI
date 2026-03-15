@@ -1,4 +1,21 @@
 services:
+  app:
+    build: .
+    container_name: securetaskapi-app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/securetaskapi
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart:  unless-stopped
   db:
     image: postgres:15
     container_name: securetaskapi-db
@@ -10,14 +27,22 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   redis:
     image: redis:7
     container_name: securetaskapi-redis
     ports:
       - "6379:6379"
-    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli","ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
+  redis_data:
