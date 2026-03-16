@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.auth import verify_token
 from app.database import get_db
 from app.models import User
-from app.redis_client import is_token_blackllisted
+from app.redis_client import is_token_blacklisted
 
 oauth2_scheme=OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -18,7 +18,7 @@ def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate":"Bearer"}
     )
-    if is_token_blackllisted(token):
+    if is_token_blacklisted(token):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token has been revoked. Please log in again.",
