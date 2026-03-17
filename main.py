@@ -4,7 +4,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from app.database import Base, get_engine
+from app.database import get_engine
 from app.routers import auth, tasks, users
 
 limiter = Limiter(key_func=get_remote_address)
@@ -12,7 +12,8 @@ limiter = Limiter(key_func=get_remote_address)
 # Create tables
 try:
     engine = get_engine()
-    Base.metadata.create_all(bind=engine)
+# Database tables managed by Alembic migrations
+# Run: alembic upgrade head
 except Exception as e:
     print(f"Database init skipped: {e}")
 

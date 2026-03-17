@@ -1,13 +1,10 @@
 import os
 
+os.environ["TESTING"] = "true"
+
+from unittest.mock import patch
+
 import pytest
-
-os.environ["DATABASE_URL"] = "sqlite:///./test.db"
-os.environ.setdefault("SECRET_KEY", "test-secret-key-for-ci")
-os.environ.setdefault("ALGORITHM", "HS256")
-os.environ.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
-os.environ.setdefault("REDIS_URL", "redis://localhost:6379")
-
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -36,6 +33,12 @@ def setup_database():
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
+
+@pytest.fixture(autouse=True)
+def mock_redis():
+    with patch("app.dependencies.is_token_blacklisted", return_value=False):
+        with patch("app.redis_client.add_token_to_blacklist", return_value=None):
+            yield
 
 @pytest.fixture()
 def client():

@@ -17,9 +17,7 @@ class UserResponse(BaseModel):
     username:str
     role:str
     created_at:datetime
-
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 class Token(BaseModel):
     access_token:str
@@ -50,6 +48,4 @@ class TaskResponse(BaseModel):
     owner_id: int
     created_at: datetime
     updated_at: Optional[datetime]
-
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
